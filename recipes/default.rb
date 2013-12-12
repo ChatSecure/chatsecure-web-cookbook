@@ -92,8 +92,15 @@ end
 
 
 # Git stuff
-# Make git checkout dir
+# Make git checkout directories
 directory node['chatsecure_web']['app_root'] do
+  owner node['chatsecure_web']['git_user']
+  group node['chatsecure_web']['service_user_group']
+  recursive true
+  action :create
+end
+
+directory node['chatsecure_web']['git_root'] do
   owner node['chatsecure_web']['git_user']
   group node['chatsecure_web']['service_user_group']
   recursive true
