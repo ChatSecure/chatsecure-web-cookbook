@@ -150,6 +150,25 @@ execute "fix_app_ownership" do
   cwd virtualenv_path
 end
 
+# Make the static file directories
+containing_dir = node['chatsecure_web']['static_container_dir'] + node['chatsecure_web']['service_name']
+static_root =  containing_dir + node['chatsecure_web']['static_dir_name']
+media_root = containing_dir + node['chatsecure_web']['media_dir_name']
+
+directory static_root do
+  owner node['chatsecure_web']['service_user']
+  group node['chatsecure_web']['service_user_group']
+  recursive true
+  action :create
+end
+
+directory media_root do
+  owner node['chatsecure_web']['service_user']
+  group node['chatsecure_web']['service_user_group']
+  recursive true
+  action :create
+end
+
 secrets = data_bag_item(node['chatsecure_web']['secret_databag_name'] , node['chatsecure_web']['secret_databag_item_name'])
 django_secret_key = secrets['django_secret_key']
 # Make local_settings.py 
@@ -166,7 +185,9 @@ template node['chatsecure_web']['app_root'] + "/#{app_name}/#{app_name}/local_se
       :db_password => node['postgresql']['password']['postgres'],
       :db_host => node['chatsecure_web']['db_host'],
       :db_port => node['chatsecure_web']['db_port'],
-      :chef_node_name => Chef::Config[:node_name]
+      :chef_node_name => Chef::Config[:node_name],
+      :static_root => static_root,
+      :media_root => media_root
     })
     action :create
 end
@@ -188,14 +209,15 @@ template node['nginx']['dir'] + "/sites-enabled/chatsecure_web.nginx" do
     variables({
     :http_listen_port => node['chatsecure_web']['http_listen_port'],
     :https_listen_port => node['chatsecure_web']['https_listen_port'],
-    :domain => node['chatsecure_web']['domain'],
+    :domain => Chef::Config[:node_name],
     :internal_port => node['chatsecure_web']['internal_port'],
     :ssl_cert => node['chatsecure_web']['ssl_dir'] + node['chatsecure_web']['ssl_cert'],
     :ssl_key => node['chatsecure_web']['ssl_dir'] + node['chatsecure_web']['ssl_key'],
     :app_root => node['chatsecure_web']['app_root'],
     :access_log => node['chatsecure_web']['log_dir'] + node['chatsecure_web']['access_log'],
     :error_log => node['chatsecure_web']['log_dir'] + node['chatsecure_web']['error_log'],
-    :static_path => node['chatsecure_web']['app_root'] + node['chatsecure_web']['static_files']
+    :static_root => static_root,
+    :media_root => media_root
     })
     notifies :restart, "service[nginx]"
     action :create

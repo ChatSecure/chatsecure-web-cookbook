@@ -27,7 +27,11 @@ server {
     error_log <%= @error_log %>;
 
     location /static {
-        alias <%= @static_path %>; # your Django project's static files - amend as required
+        alias <%= @static_root %>;
+    }
+
+    location /media {
+        alias <%= @media_root %>;
     }
 
     location / {

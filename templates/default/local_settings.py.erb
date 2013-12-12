@@ -14,3 +14,8 @@ DATABASES = {
         'PORT': '<%= @db_port %>',                      # Set to empty string for default. Not used with sqlite3.
     }
 }
+
+ALLOWED_HOSTS = ["<%= @chef_node_name %>"]
+
+STATIC_ROOT = '<%= @static_root %>'
+MEDIA_ROOT = '<%= @media_root %>'
