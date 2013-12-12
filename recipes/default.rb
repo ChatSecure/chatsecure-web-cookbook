@@ -20,7 +20,7 @@ ssl_key = keys[key_name]
 cert = certs[cert_name]
 
 directory node['chatsecure_web']['ssl_dir'] do
-  mode "077"
+  mode "770"
   action :create
   recursive true
 end
@@ -28,14 +28,14 @@ end
 # Copy SSL cert
 file node['chatsecure_web']['ssl_dir'] + node['chatsecure_web']['ssl_cert'] do
   content cert
-  mode "077"
+  mode "770"
   action :create
 end
 
 # Copy SSL key
 file node['chatsecure_web']['ssl_dir'] + node['chatsecure_web']['ssl_key'] do
   content ssl_key
-  mode "077"
+  mode "770"
   action :create
 end
 
