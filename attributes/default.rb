@@ -33,7 +33,6 @@ default['chatsecure_web']['git_url']      		= "git://github.com/ChatSecure/chats
 default['chatsecure_web']['git_rev']      		= "master"
 default['chatsecure_web']['log_dir']     		= "/var/log/chatsecure-web/"
 default['chatsecure_web']['service_log']		= "chatsecure_web.log"
-default['chatsecure_web']['service_error_log']	= "chatsecure_web_error.log"
 
 # uWSGI config
 default['chatsecure_web']['app_workers']        = 5

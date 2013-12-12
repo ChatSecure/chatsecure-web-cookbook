@@ -17,6 +17,7 @@ script
     --socket=127.0.0.1:<%= @app_port %> \
     --processes=<%= @app_workers %> \
     --uid=<%= @service_user_id %> --gid=<%= @service_user_gid %> \
+    --logto2 <%= @log_path %> \
     --harakiri=<%= @harakiri %> \
     --max-requests=<%= @max_requests %> \
     --vacuum \

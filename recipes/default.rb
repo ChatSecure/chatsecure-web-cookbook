@@ -171,6 +171,7 @@ end
 
 secrets = data_bag_item(node['chatsecure_web']['secret_databag_name'] , node['chatsecure_web']['secret_databag_item_name'])
 django_secret_key = secrets['django_secret_key']
+memcached_location = node['memcached']['listen'] + ":" + node['memcached']['port'].to_s
 # Make local_settings.py 
 app_name = node['chatsecure_web']['app_name']
 template node['chatsecure_web']['app_root'] + "/#{app_name}/#{app_name}/local_settings.py" do
@@ -187,7 +188,8 @@ template node['chatsecure_web']['app_root'] + "/#{app_name}/#{app_name}/local_se
       :db_port => node['chatsecure_web']['db_port'],
       :chef_node_name => Chef::Config[:node_name],
       :static_root => static_root,
-      :media_root => media_root
+      :media_root => media_root,
+      :memcached_location => memcached_location
     })
     action :create
 end
@@ -223,6 +225,7 @@ template node['nginx']['dir'] + "/sites-enabled/chatsecure_web.nginx" do
     action :create
 end
 
+log_path = node['chatsecure_web']['log_dir'] + node['chatsecure_web']['service_log']
 # Upstart service config file
 template "/etc/init/" + node['chatsecure_web']['service_name'] + ".conf" do
     source "upstart.conf.erb"
@@ -233,8 +236,7 @@ template "/etc/init/" + node['chatsecure_web']['service_name'] + ".conf" do
     :virtualenv_path => virtualenv_path,
     :app_root => node['chatsecure_web']['app_root'],
     :app_name => node['chatsecure_web']['app_name'],
-    :access_log_path => node['chatsecure_web']['log_dir'] + node['chatsecure_web']['service_log'],
-    :error_log_path => node['chatsecure_web']['log_dir'] + node['chatsecure_web']['service_error_log'],
+    :log_path => log_path,
     :app_port => node['chatsecure_web']['internal_port'],
     :app_workers => node['chatsecure_web']['app_workers'],
     :max_requests => node['chatsecure_web']['max_requests'],
@@ -246,14 +248,7 @@ template "/etc/init/" + node['chatsecure_web']['service_name'] + ".conf" do
 end
 
 # Make service log file
-file node['chatsecure_web']['log_dir'] + node['chatsecure_web']['service_log']  do
-  owner node['chatsecure_web']['service_user']
-  group node['chatsecure_web']['service_user_group'] 
-  action :create_if_missing # see actions section below
-end
-
-# Make service error log file
-file node['chatsecure_web']['log_dir'] + node['chatsecure_web']['service_error_log']  do
+file log_path do
   owner node['chatsecure_web']['service_user']
   group node['chatsecure_web']['service_user_group'] 
   action :create_if_missing # see actions section below
