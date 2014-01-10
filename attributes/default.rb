@@ -9,14 +9,6 @@
 default['chatsecure_web']['secret_databag_name'] 			= "secrets"
 default['chatsecure_web']['secret_databag_item_name'] 		= "secrets"
 
-# SSL
-default['chatsecure_web']['ssl_databag_name'] 		= "ssl"
-default['chatsecure_web']['ssl_databag_certs_item'] 	= "certs"
-default['chatsecure_web']['ssl_databag_keys_item'] = "keys"
-default['chatsecure_web']['ssl_dir']                = "/srv/ssl/"
-default['chatsecure_web']['ssl_cert']           = "chatsecure-bundle.crt"
-default['chatsecure_web']['ssl_key']            = "chatsecure.key"
-
 # System
 default['chatsecure_web']['static_container_dir'] = "/var/www/static/"
 default['chatsecure_web']['static_dir_name']    = "/static/"

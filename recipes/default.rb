@@ -7,38 +7,6 @@
 # Licensed under the AGPLv3
 #
 
-
-# SSL
-ssl_databag_name = node['chatsecure_web']['ssl_databag_name']
-certs_item = node['chatsecure_web']['ssl_databag_certs_item']
-keys_item = node['chatsecure_web']['ssl_databag_keys_item']
-certs = data_bag_item(ssl_databag_name, certs_item)
-keys = data_bag_item(ssl_databag_name, keys_item)
-cert_name = node['chatsecure_web']['ssl_cert']
-key_name = node['chatsecure_web']['ssl_key']
-ssl_key = keys[key_name]
-cert = certs[cert_name]
-
-directory node['chatsecure_web']['ssl_dir'] do
-  mode "770"
-  action :create
-  recursive true
-end
-
-# Copy SSL cert
-file node['chatsecure_web']['ssl_dir'] + node['chatsecure_web']['ssl_cert'] do
-  content cert
-  mode "770"
-  action :create
-end
-
-# Copy SSL key
-file node['chatsecure_web']['ssl_dir'] + node['chatsecure_web']['ssl_key'] do
-  content ssl_key
-  mode "770"
-  action :create
-end
-
 # Setup postgresql database
 postgresql_database node['chatsecure_web']['db_name'] do
   connection ({
@@ -213,8 +181,8 @@ template node['nginx']['dir'] + "/sites-enabled/chatsecure_web.nginx" do
     :https_listen_port => node['chatsecure_web']['https_listen_port'],
     :domain => Chef::Config[:node_name],
     :internal_port => node['chatsecure_web']['internal_port'],
-    :ssl_cert => node['chatsecure_web']['ssl_dir'] + node['chatsecure_web']['ssl_cert'],
-    :ssl_key => node['chatsecure_web']['ssl_dir'] + node['chatsecure_web']['ssl_key'],
+    :ssl_cert => node['chatsecure_ssl']['ssl_dir'] + node['chatsecure_ssl']['ssl_cert'],
+    :ssl_key => node['chatsecure_ssl']['ssl_dir'] + node['chatsecure_ssl']['ssl_key'],
     :app_root => node['chatsecure_web']['app_root'],
     :access_log => node['chatsecure_web']['log_dir'] + node['chatsecure_web']['access_log'],
     :error_log => node['chatsecure_web']['log_dir'] + node['chatsecure_web']['error_log'],
